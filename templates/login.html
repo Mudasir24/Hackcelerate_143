@@ -4,30 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css')}}">
 </head>
 <body>
 <h1>LOGIN PAGE</h1>
 <form action="dashboard.html" method="post">
+
   <label for="username">Username:</label>
-  <input type="text" id="username" name="username" required>
+  <input type="text" id="username" name="username" placeholder="Username" required autofocus><br>
 
-    <br><br>
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" placeholder="Password" minlength="8" required><br>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" placeholder="Enter your password" minlength="8" required>
-
-    <br><br>
-
-    <button type="submit">Login</button>
+  <button type="submit">Login</button>
   </form>
 
-<a href="register.html">New User?</a>
-<a href="officer-login.html">Login as Officer</a>
-
-
-<script src="index.js"></script>
-
+<a href="/register">New User?</a>
+<a href="/officer-login">Login as Officer</a>
 
 </body>
 </html>

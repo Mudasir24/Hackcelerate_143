@@ -24,7 +24,43 @@ def after_request(response):
 @login_required
 def index():
     """Home page"""
-    return render_template("login.html")
+    return render_template("index.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """Log user in"""
+    # Forget any user_id
+    session.clear()
+
+    if request.method == "POST":
+        # Ensure username was submitted
+        if not request.form.get("username"):
+            return render_template("login.html", message="Must provide username")
+        
+        # Ensure password was submitted
+        if not request.form.get("password"):
+            return render_template("login.html", message="Must provide password")
+        
+        # Query database for username(Fawaz)
+
+
+        # Ensure username exists and password is correct(Fawaz)
+
+        # Remember which user has logged in
+        # session["user_id"] = user_id
+
+        return render_template("index.html")
+    else:
+        return render_template("login.html")
+    
+@app.route("/logout")
+@login_required
+def logout():
+    """Log user out"""
+    # Forget any user_id
+    session.clear()
+
+    return redirect("/")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -63,4 +99,5 @@ def register():
 
     else:
         return render_template("register.html")
+
         

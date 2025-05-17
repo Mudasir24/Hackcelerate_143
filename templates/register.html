@@ -8,7 +8,13 @@
 </head>
 <body>
   <h1>REGISTER PAGE</h1>
-  <form action="index.html" method="post">
+  {% if message %}
+  <script>
+    alert("{{ message }}");
+  </script>
+  {% endif %}
+
+  <form action="/register " method="post">
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" placeholder="Username" required autofocus>
 
@@ -16,10 +22,10 @@
     <input type="email" id="email" name="email" placeholder="Email Address" required>
 
     <label for="password">Set Password:</label>
-    <input type="password" id="password" name="password" placeholder="Password" minlength="8" required>
+    <input type="password" id="password" name="password" placeholder="Password" minlength="6" required>
 
     <label for="confirm_password">Confirm Password:</label>
-    <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" minlength="8" required>
+    <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" minlength="6" required>
 
     <button type="submit">Register</button>
   </form>

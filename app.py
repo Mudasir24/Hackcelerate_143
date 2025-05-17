@@ -47,13 +47,13 @@ def login():
         if not request.form.get("password"):
             return render_template("login.html", message="Must provide password")
         
-        # Query database for username(Fawaz)
+        # Query database for username
         username = request.form.get("username")
         password = request.form.get("password")
 
-        user = users_collection.find_one({"username:": username})
+        user = users_collection.find_one({"username": username})#              
 
-        # Ensure username exists and password is correct(Fawaz)
+        # Ensure username exists and password is correct
 
         if user is None or not check_password_hash(user["password"], password):
             return render_template("login.html", message="Invalid username or password")
@@ -61,7 +61,7 @@ def login():
         # Remember which user has logged in
         session["user_id"] = str(user["_id"])
 
-        return render_template("index.html")
+        return redirect("/")
     else:
         return render_template("login.html")
     
@@ -91,11 +91,11 @@ def register():
             return render_template("register.html", message="Must provide password")
         
         # Ensure password confirmation was submitted
-        if not request.form.get("confirmation"):
+        if not request.form.get("confirm_password"):
             return render_template("register.html", message="Must provide password confirmation")
         
         # Ensure password and confirmation match
-        if request.form.get("password") != request.form.get("confirmation"):
+        if request.form.get("password") != request.form.get("confirm_password"):
             return render_template("register.html", message="Passwords do not match")
          
         # Check if username already exists(Fawaz)
@@ -116,9 +116,6 @@ def register():
         })
 
         return render_template("login.html")
-
-
-
 
     else:
         return render_template("register.html")

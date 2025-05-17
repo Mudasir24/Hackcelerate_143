@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, redirect, request, session
+from flask import Flask, render_template, redirect, request, session, url_for, flash
+import base64
 from flask_session import Session
 from helpers import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -119,3 +120,36 @@ def register():
 
     else:
         return render_template("register.html")
+    
+@app.route("/complaint", methods=["GET", "POST"])
+@login_required
+def complaint():
+    """Complaint page"""
+    if request.method == "POST":
+        # Ensure complaint was submitted
+        if 'image' not in request.files:
+            flash('No image part in the form')
+            return redirect(request.url)
+    
+        file = request.files['image']
+    
+        if file.filename == '':
+            flash('No image selected for uploading')
+            return redirect(request.url)
+    
+        # Collect image data
+        image_name = file.filename
+        image_data = file.read()
+        image_b64 = base64.b64encode(image_data).decode('utf-8')
+
+        if not request.form.get("address"):
+            return render_template("complaint.html", message="Must provide address")
+        if not request.form.get("latitude"):
+            return render_template("complaint.html", message="Must provide latitude")
+        if not request.form.get("longitude"):
+            return render_template("complaint.html", message="Must provide longitude")
+        
+        
+        return redirect("/")
+    else:
+        return render_template("complaint.html")

@@ -30,46 +30,69 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    getLocationBtn.addEventListener("click", async function() {
-        locationStatus.textContent = "Detecting your exact location...";
-        locationStatus.style.color = "#2e7d32";
-        getLocationBtn.disabled = true;
-        getLocationBtn.textContent = "🛰️ Locating...";
+    document.getElementById("getLocationBtn").addEventListener("click", async function () {
+    const locationStatus = document.getElementById("locationStatus");
+    const getLocationBtn = this;
 
-        try {
-            const position = await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                });
+    const latitudeInput = document.getElementById("latitude");
+    const longitudeInput = document.getElementById("longitude");
+    const addressInput = document.getElementById("autoAddress");
+    const exactAddressInput = document.getElementById("exactAddress");
+
+    // Reset status
+    locationStatus.textContent = "Detecting your exact location...";
+    locationStatus.style.color = "#2e7d32";
+
+    // Disable button during fetch
+    getLocationBtn.disabled = true;
+    getLocationBtn.textContent = "🛰️ Locating...";
+
+    try {
+        const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
             });
+        });
 
-            const { latitude, longitude } = position.coords;
-            const address = await getExactAddress(latitude, longitude);
+        const { latitude, longitude } = position.coords;
 
-            // 3. Update form fields
-            autoAddress.value = address;
-            document.getElementById("latitude").value = latitude;
-            document.getElementById("longitude").value = longitude;
-            document.getElementById("exactAddress").value = address;
-
-            locationStatus.textContent = "Exact address found!";
-            locationStatus.style.color = "#2e7d32";
-            
-        } catch (error) {
-            let message = "Error getting location";
-            if (error.code === 1) message = "Permission denied - please allow location access";
-            if (error.code === 2) message = "Position unavailable (try outdoors)";
-            if (error.code === 3) message = "Timeout - try again";
-            
-            locationStatus.textContent = message;
-            locationStatus.style.color = "#e53935";
-        } finally {
-            getLocationBtn.disabled = false;
-            getLocationBtn.textContent = "📍 Get Exact Location";
+        // Optional: Add a check to avoid undefined values
+        if (!latitude || !longitude) {
+            throw new Error("Coordinates not found");
         }
-    });
+
+        // Get address using a reverse geocoding function (assumed to be defined elsewhere)
+        const address = await getExactAddress(latitude, longitude); // You must define this separately
+
+        // Update form fields
+        addressInput.value = address;
+        latitudeInput.value = latitude;
+        longitudeInput.value = longitude;
+        exactAddressInput.value = address;
+
+        // Success status
+        locationStatus.textContent = "Exact address found!";
+        locationStatus.style.color = "#2e7d32";
+
+    } catch (error) {
+        console.error("Geolocation error:", error);
+
+        let message = "Error getting location.";
+        if (error.code === 1) message = "Permission denied - please allow location access";
+        else if (error.code === 2) message = "Position unavailable (try outdoors)";
+        else if (error.code === 3) message = "Timeout - try again";
+        else message = error.message || "Unexpected error occurred";
+
+        locationStatus.textContent = message;
+        locationStatus.style.color = "#e53935";
+    } finally {
+        getLocationBtn.disabled = false;
+        getLocationBtn.textContent = "📍 Get Exact Location";
+    }
+});
+
 
     async function getExactAddress(lat, lon) {
         try {
@@ -96,34 +119,5 @@ document.addEventListener("DOMContentLoaded", function() {
             return `Near ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
         }
     }
-
-    form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        
-        if (!complaintImage.files.length) {
-            alert("Please upload an image");
-            return;
-        }
-        
-        const locationData = {
-            method: addressChoice.value,
-            address: addressChoice.value === "manual" 
-                ? document.getElementById("address").value 
-                : autoAddress.value,
-            exactAddress: document.getElementById("exactAddress").value,
-            coordinates: addressChoice.value === "auto"
-                ? `${document.getElementById("latitude").value},${document.getElementById("longitude").value}`
-                : null
-        };
-        
-        console.log("Submitting:", {
-            image: complaintImage.files[0].name,
-            ...locationData,
-            description: document.getElementById("description").value || "None"
-        });
-        
-        alert(`Report submitted successfully!\n\nAddress: ${locationData.address}`);
-        form.reset();
-        imagePreview.style.display = "none";
-    });
 });
+

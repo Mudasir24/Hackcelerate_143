@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register a Complaint</title>
-  <link rel="stylesheet" href="complaint.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='complaint.css')}}">
 </head>
 <body>
   <!-- Fixed Navbar -->
@@ -18,13 +18,18 @@
       <a href="index.html" class="logout-btn">Logout</a>
     </div>
   </nav>
-
+  {% if message %}
+  <script>
+    alert("{{ message }}");
+  </script>
+  {% endif %}
   <!-- Main Complaint Form -->
   <div class="container">
     <h1>Report an Issue</h1>
-    <form id="complaintForm">
+    <form action="/complaint" method="post" id="complaintForm" >
       <label for="complaintImage">Upload Photo:</label>
-      <input type="file" id="complaintImage" accept="image/*" />
+      <input type="file" id="complaintImage" accept="image/*" name="image">
+
       <img id="imagePreview" alt="Preview" style="display: none;" />
 
       <label for="addressChoice">Location Method:</label>
@@ -35,12 +40,12 @@
 
       <div id="manualAddressSection">
         <label for="address">Full Address:</label>
-        <input type="text" id="address" placeholder="Street, City, ZIP Code" />
+        <input type="text" id="address" placeholder="Street, City, ZIP Code" name="address" required>
       </div>
 
       <div id="autoLocationSection" style="display: none;">
         <div class="location-group">
-          <input type="text" id="autoAddress" placeholder="Address will appear here" readonly />
+          <input type="text" id="autoAddress" placeholder="Address will appear here" name="address" readonly />
           <button type="button" id="getLocationBtn">📍 Get Exact Location</button>
         </div>
         <p id="locationStatus"></p>
@@ -50,16 +55,16 @@
       </div>
 
       <label for="description">Description (Optional):</label>
-      <textarea id="description" placeholder="Describe the issue..."></textarea>
+      <textarea id="description" placeholder="Describe the issue..." name="description"></textarea>
 
-      <div class="form-actions">
+      
         <button type="submit">Submit Report</button>
         <button type="reset" class="secondary">Cancel</button>
-      </div>
+      
     </form>
   </div>
 
-  <script src="complaint.js"></script>
+  <script src="{{ url_for('static', filename='complaint.js')}}"></script>
 </body>
 </html>
 

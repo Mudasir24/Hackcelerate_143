@@ -1,5 +1,16 @@
-body{
-background: linear-gradient(135deg, #4caf50, #00543f);}
+body {
+  /* Animated gradient background */
+  background: linear-gradient(270deg, #4caf50, #00543f, #1e3c72, #2a5298);
+  background-size: 800% 800%;
+  animation: gradientShift 20s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 form {
   max-width: 350px;
   margin: 50px auto;
@@ -21,7 +32,7 @@ input[type="text"],
 input[type="password"] {
   padding: 10px;
   font-size: 1rem;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   width: 100%;
@@ -37,6 +48,7 @@ button[type="submit"] {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  animation: none; /* No jump on button */
 }
 
 button[type="submit"]:hover {
@@ -47,15 +59,18 @@ a {
   display: block;
   text-align: center;
   margin-top: 15px;
-  color:black;
+  color: white;
   text-decoration: none;
-  font-weight:1000;
-  font-size:25px;
+  font-weight: 700;
+  font-size: 22px;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  transition: color 0.3s ease;
 }
 
 a:hover {
+  color: #00509e; /* Slightly lighter navy on hover */
   text-decoration: underline;
+  text-shadow: none; /* No glow */
 }
 
 @media (max-width: 480px) {
@@ -75,9 +90,24 @@ a:hover {
     font-size: 1.1rem;
   }
 }
-h1{
-    color:black;
-    text-align: center;
-    font-weight: 2000;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+h1 {
+  color:white;
+  font-weight: 900;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  animation: jumpHeading 2.5s infinite;
+  margin-top: 30px;
 }
+
+@keyframes jumpHeading {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+

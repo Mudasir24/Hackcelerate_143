@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register a Complaint</title>
+  <link rel="stylesheet" href="complaint.css" />
+</head>
+<body>
+  <!-- Fixed Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+       <a href="complaint.html">Register a Complaint</a>
+      <a href="about.html">About Us</a>
+      <a href="faq.html">FAQs</a>
+    </div>
+    <div class="nav-right">
+      <a href="index.html" class="logout-btn">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Complaint Form -->
+  <div class="container">
+    <h1>Report an Issue</h1>
+    <form id="complaintForm">
+      <label for="complaintImage">Upload Photo:</label>
+      <input type="file" id="complaintImage" accept="image/*" />
+      <img id="imagePreview" alt="Preview" style="display: none;" />
+
+      <label for="addressChoice">Location Method:</label>
+      <select id="addressChoice">
+        <option value="manual">Enter Address Manually</option>
+        <option value="auto">Use Current Location</option>
+      </select>
+
+      <div id="manualAddressSection">
+        <label for="address">Full Address:</label>
+        <input type="text" id="address" placeholder="Street, City, ZIP Code" />
+      </div>
+
+      <div id="autoLocationSection" style="display: none;">
+        <div class="location-group">
+          <input type="text" id="autoAddress" placeholder="Address will appear here" readonly />
+          <button type="button" id="getLocationBtn">📍 Get Exact Location</button>
+        </div>
+        <p id="locationStatus"></p>
+        <input type="hidden" id="latitude" name="latitude" />
+        <input type="hidden" id="longitude" name="longitude" />
+        <input type="hidden" id="exactAddress" name="exactAddress" />
+      </div>
+
+      <label for="description">Description (Optional):</label>
+      <textarea id="description" placeholder="Describe the issue..."></textarea>
+
+      <div class="form-actions">
+        <button type="submit">Submit Report</button>
+        <button type="reset" class="secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="complaint.js"></script>
+</body>
+</html>
+

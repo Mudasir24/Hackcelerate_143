@@ -3,6 +3,12 @@ from flask import Flask, render_template, redirect, request, session
 from flask_session import Session
 from helpers import login_required
 from werkzeug.security import generate_password_hash, check_password_hash
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+
+client = MongoClient("mongodb+srv://Fawaz:fawaz1111@garbage-detection.dvpjxvx.mongodb.net/")
+db = client["Garbage_Detection_Project"]
+users_collection = db["Users"]
 
 app = Flask(__name__)
 
@@ -42,12 +48,18 @@ def login():
             return render_template("login.html", message="Must provide password")
         
         # Query database for username(Fawaz)
+        username = request.form.get("username")
+        password = request.form.get("password")
 
+        user = users_collection.find_one({"username:": username})
 
         # Ensure username exists and password is correct(Fawaz)
 
+        if user is None or not check_password_hash(user["password"], password):
+            return render_template("login.html", message="Invalid username or password")
+        
         # Remember which user has logged in
-        # session["user_id"] = user_id
+        session["user_id"] = str(user["_id"])
 
         return render_template("index.html")
     else:
@@ -88,9 +100,20 @@ def register():
          
         # Check if username already exists(Fawaz)
 
+        username = request.form.get("username")
+        email_id = request.form.get("email")
+        if users_collection.find_one({"username": username}):
+            return render_template("register.html", message="Username already exists")
+
+        # Hash the password
         hashed_password = generate_password_hash(request.form.get("password"))
 
         # Store the user in the database(Fawaz)
+        users_collection.insert_one({
+            "username": username,
+            "email": email_id,
+            "password": hashed_password
+        })
 
         return render_template("login.html")
 
@@ -99,5 +122,3 @@ def register():
 
     else:
         return render_template("register.html")
-
-        

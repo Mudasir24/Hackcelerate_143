@@ -1,33 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="index.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="login.css">
 </head>
 <body>
-<h1>LOGIN PAGE</h1>
-<form action="dashboard.html" method="post">
-  <label for="username">Username:</label>
-  <input type="text" id="username" name="username" required>
+  <h1>LOGIN PAGE</h1>
+  <form action="dashboard.html" method="post">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" placeholder="Enter your username" required>
 
-  <br><br>
+    <br><br>
 
-  <label for="password">Password:</label>
-<input type="password" id="password" name="password" minlength="8" required>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" placeholder="Enter your password" minlength="8" required>
 
-  <br><br>
+    <br><br>
 
-  <button type="submit">Login</button>
-</form>
+    <button type="submit">Login</button>
+  </form>
 
-<a href="register.html">New User?</a>
-<a href="officer-login.html">Login as Officer</a>
-
-
-<script src="index.js"></script>
-
-
+  <a href="register.html">New User?</a>
+  <a href="officer-login.html">Login as Officer</a>
 </body>
 </html>

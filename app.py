@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, redirect, request, session, url_for, flash
 import base64
 from flask_session import Session
-from helpers import login_required, detect_trash, estimate_trash_level
+from helpers import login_required,officer_login_required, detect_trash, estimate_trash_level
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -14,6 +14,7 @@ import cv2
 client = MongoClient("mongodb+srv://Fawaz:fawaz1111@garbage-detection.dvpjxvx.mongodb.net/")
 db = client["Garbage_Detection_Project"]
 users_collection = db["Users"]
+officers_collection = db["Officers"]
 complaints_collection = db["Complaints"]
 user_images_collection = db["Images"]
 fs = gridfs.GridFS(db)
@@ -59,7 +60,7 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        user = users_collection.find_one({"username": username})#              
+        user = users_collection.find_one({"username": username})            
 
         # Ensure username exists and password is correct
 
@@ -176,6 +177,10 @@ def complaint():
             longitude = float(request.form.get("longitude", 0))
         except ValueError:
             return render_template("complaint.html", message="Invalid latitude/longitude")
+        
+        description = request.form.get("description")
+        if not description or description.strip() == "":
+            description = "No description provided"
 
         # Split address
         try:
@@ -194,8 +199,8 @@ def complaint():
             "area": area,
             "city": city,
             "pincode": pincode,
-            "latitude": float(latitude),
-            "longitude": float(longitude),
+            "latitude": latitude,
+            "longitude": longitude,
             "timestamp": datetime.utcnow()
         }
         image_result = user_images_collection.insert_one(user_image)
@@ -211,7 +216,8 @@ def complaint():
             "timestamp": datetime.utcnow(),
             "status": "new",
             "assigned_officer_id": None,
-            "cleanup_image_file_id": None
+            "cleanup_image_file_id": None,
+            "description": description,
         }
 
         complaints_collection.insert_one(complaint_doc)
@@ -239,35 +245,42 @@ def officer_login():
     """Officer login page"""
     # Forget any user_id
     session.clear()
+
     if request.method == "POST":
         # Ensure username was submitted
-        if not request.form.get("username"):
-            return render_template("officer_login.html", message="Must provide username")
+        if not request.form.get("officer-username"):
+            return render_template("officer-login.html", message="Must provide username")
         
         # Ensure password was submitted
-        if not request.form.get("password"):
-            return render_template("officer_login.html", message="Must provide password")
+        if not request.form.get("officer-password"):
+            return render_template("officer-login.html", message="Must provide password")
         
-        #Database (fawaz)
+        #Database
         # Query database for username
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form.get("officer-username")
+        password = request.form.get("officer-password")
 
-        #session["officer_id"] =  (fawaz)
+        officer = officers_collection.find_one({"username":username})
+        
+        if officer is None or not check_password_hash(officer["password"], password):
+            return render_template("officer-login.html", message="Invalid username or password")
+        
+        
+        session["officer_id"] =  str(officer["_id"])
 
-        return redirect("/officer-dashboard")
+        return redirect("/officer-dash")
     
     else:
-        return render_template("officer_login.html")
+        return render_template("officer-login.html")
     
-@app.route("/officer-dashboard")
-@login_required
-def officer_dashboard():
+@app.route("/officer-dash")
+@officer_login_required
+def officer_dash():
     """Officer dashboard page"""
-    return render_template("officer_dashboard.html")
+    return render_template("officer-dash.html")
 
 @app.route("/complete", methods=["GET", "POST"])
-@login_required
+@officer_login_required
 def complete():
     """Complete complaint"""
     if request.method == "POST":

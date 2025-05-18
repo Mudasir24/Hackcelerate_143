@@ -8,17 +8,21 @@
 </head>
 <body>
 <h1>LOGIN</h1>
-<form action="officer-dashboard.html" method="post">
-  <label for="officer-username">Officer ID:</label>
-  <input type="text" id="officer-username" name="officer-username" required>
+{% if message %}
+  <script>
+    alert("{{ message }}");
+  </script>
+  {% endif %}
+<form action="/officer-login" method="post">
+  <label for="officer-username">Officer Username:</label>
+  <input type="text" id="officer-username" name="officer-username" placeholder="Officer Username">
 
   <label for="officer-password">Password:</label>
-  <input type="password" id="officer-password" name="officer-password" minlength="8" required>
+  <input type="password" id="officer-password" name="officer-password" minlength="4" required>
 
   <button type="submit">Login as Officer</button>
 </form>
 
-<a href="login.html">Login as user</a>
-<a href="officer-register.html">New officer?</a>
+<a href="/login">Login as user</a>
 </body>
 </html>

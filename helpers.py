@@ -22,6 +22,18 @@ def login_required(f):
     
     return decorated_function
 
+def officer_login_required(f):
+    """
+    Decorator to check if the user is logged in.
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("officer_id") is None:
+            return redirect("/officer-login")
+        return f(*args, **kwargs)
+    
+    return decorated_function
+
 
 def detect_trash(img):
     results = model(img)

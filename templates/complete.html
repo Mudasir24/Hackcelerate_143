@@ -10,9 +10,10 @@
   <nav class="navbar">
     <div class="nav-left">
       <!-- You can add navigation links here if needed -->
+      <a href="/officer-dash">Home</a>
     </div>
     <div class="nav-right">
-      <a href="index.html" class="logout-btn">Logout</a>
+      <a href="/logout" class="logout-btn">Logout</a>
     </div>
   </nav>
 
@@ -20,7 +21,7 @@
 
   <div class="container">
     <h1>Report</h1>
-    <form action="/complaint" method="post" id="complaintForm" enctype="multipart/form-data">
+    <form action="/complete" method="post" id="complaintForm" enctype="multipart/form-data">
       <label for="complaintImage">Upload Photo:</label>
       <input type="file" id="complaintImage" accept="image/*" name="image" />
 
@@ -58,13 +59,15 @@
         <input type="hidden" id="longitude" name="longitude" />
         <input type="hidden" id="exactAddress" name="exactAddress" />
       </div>
+      <input type="hidden" id="complaint" name="complaint" value="{{complaint_id}}" />
 
-      <button type="submit">Submit Report</button>
+
+      <button type="submit">Verify</button>
      
     </form>
   </div>
 
-  <script src="complaint.js"></script>
+  <script src="{{ url_for('static', filename='complete.js')}}"></script>
 </body>
 </html>
 

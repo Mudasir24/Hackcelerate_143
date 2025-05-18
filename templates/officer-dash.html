@@ -14,7 +14,12 @@
       padding: 80px 30px 30px;
       background: #eaf4ec;
       color: #2e4631;
-      margin: 0;
+      margin: 0;  
+      background-image: url("https://images.pexels.com/photos/352096/pexels-photo-352096.jpeg?cs=srgb&dl=pexels-achim-bongard-87217-352096.jpg&fm=jpg");
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed ;
+      background-repeat: no-repeat;
     }
 
     .navbar {
@@ -164,18 +169,18 @@
     .rotating-globe {
   width: 120px;
   filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.2));
-  animation: spin 4s ease-in-out infinite, bounce 2s ease infinite;
+  animation: spin 4s ease-in-out infinite, bounce 2s ease infinite;
 }
   </style>
 </head>
 <body>
 
   <div class="navbar">
-    <div class="logo">Dashboard</div>
-    <button class="logout-btn">Logout</button>
+    <div class="logo">Officer Dashboard</div>
+    <button class="logout-btn" href="/logout">Logout</button>
   </div>
 
-  <h1>User Dashboard</h1>
+  <h1>Complaint Details</h1>
   <table>
     <thead>
       <tr>
@@ -188,40 +193,17 @@
     </thead>
     <tbody>
       <tr>
-        <td>Complain ID 001</td>
-        <td>Description</td>
-        <td><button class="image-btn" disabled>Image</button></td>
+      {% for complaint in complaints %}
+      <tr>
+        <td>{{complaint["id"]}}</td>
+        <td>{{ complaint["description"] }}</td>
+        <td><img src="data:image/jpeg;base64,{{ complaint.image_data }}" alt="Complaint image" class="complaint-image" width="300px" height="300px" ></td>
         <td><a href="https://www.google.com/maps/dir/?api=1&destination=17.427021,78.429938" class="complete-link">GO TO</a></td>
-        <td><a href="/complete" class="complete-link">Verify</a></td>
+        <td><form action="/complete" method="GET"><input type="hidden" name="complaint_id" value="{{ complaint_id }}"><button type="submit" class="complete-link">Verify</button></form></td>
+        
       </tr>
-      <tr>
-        <td><button disabled>Complain ID 002</button></td>
-        <td><button disabled>Description</button></td>
-        <td><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Rotating_globe.gif?20090914225528" class="rotating-globe" alt="Globe"></td>
-        <td><button disabled>Get Location</button></td>
-        <td><a href="complete.html" class="complete-link">Completed</a></td>
-      </tr>
-      <tr>
-        <td><button disabled>Complain ID 003</button></td>
-        <td><button disabled>Description</button></td>
-        <td><button class="image-btn" disabled>Image</button></td>
-        <td><button disabled>Get Location</button></td>
-        <td><a href="complete.html" class="complete-link">Completed</a></td>
-      </tr>
-      <tr>
-        <td><button disabled>Complain ID 004</button></td>
-        <td><button disabled>Description</button></td>
-        <td><button class="image-btn" disabled>Image</button></td>
-        <td><button disabled>Get Location</button></td>
-        <td><a href="complete.html" class="complete-link">Completed</a></td>
-      </tr>
-      <tr>
-        <td><button disabled>Complain ID 005</button></td>
-        <td><button disabled>Description</button></td>
-        <td><button class="image-btn" disabled>Image</button></td>
-        <td><button disabled>Get Location</button></td>
-        <td><a href="complete.html" class="complete-link">Completed</a></td>
-      </tr>
+      {% endfor %}
+
     </tbody>
   </table>
 

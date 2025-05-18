@@ -132,7 +132,7 @@
       display: inline-block;
       text-align: center;
     }
-
+   
     button:hover:not(:disabled), .complete-link:hover {
       background: linear-gradient(135deg, #8bc34a, #3e8e41);
       box-shadow: 0 7px 15px rgba(139, 195, 74, 0.7);
@@ -161,6 +161,11 @@
       user-select: none;
       border: 2px solid #8bc34a;
     }
+    .rotating-globe {
+  width: 120px;
+  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.2));
+  animation: spin 4s ease-in-out infinite, bounce 2s ease infinite;
+}
   </style>
 </head>
 <body>
@@ -183,16 +188,16 @@
     </thead>
     <tbody>
       <tr>
-        <td><button disabled>Complain ID 001</button></td>
-        <td><button disabled>Description</button></td>
+        <td>Complain ID 001</td>
+        <td>Description</td>
         <td><button class="image-btn" disabled>Image</button></td>
-        <td><button disabled>Get Location</button></td>
-        <td><a href="complete.html" class="complete-link">Completed</a></td>
+        <td><a href="https://www.google.com/maps/dir/?api=1&destination=17.427021,78.429938" class="complete-link">GO TO</a></td>
+        <td><a href="/complete" class="complete-link">Verify</a></td>
       </tr>
       <tr>
         <td><button disabled>Complain ID 002</button></td>
         <td><button disabled>Description</button></td>
-        <td><button class="image-btn" disabled>Image</button></td>
+        <td><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Rotating_globe.gif?20090914225528" class="rotating-globe" alt="Globe"></td>
         <td><button disabled>Get Location</button></td>
         <td><a href="complete.html" class="complete-link">Completed</a></td>
       </tr>

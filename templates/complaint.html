@@ -26,7 +26,7 @@
   <!-- Main Complaint Form -->
   <div class="container">
     <h1>Report an Issue</h1>
-    <form action="/complaint" method="post" id="complaintForm" >
+    <form action="/complaint" method="post" id="complaintForm" enctype="multipart/form-data" >
       <label for="complaintImage">Upload Photo:</label>
       <input type="file" id="complaintImage" accept="image/*" name="image">
 
@@ -40,12 +40,12 @@
 
       <div id="manualAddressSection">
         <label for="address">Full Address:</label>
-        <input type="text" id="address" placeholder="Street, City, ZIP Code" name="address">
+        <input type="text" id="address" placeholder="Street, City, ZIP Code" name="manual_address" />
       </div>
 
       <div id="autoLocationSection" style="display: none;">
         <div class="location-group">
-          <input type="text" id="autoAddress" placeholder="Address will appear here" name="address" readonly />
+          <input type="text" id="autoAddress" placeholder="Address will appear here" name="auto_address" readonly />
           <button type="button" id="getLocationBtn">📍 Get Exact Location</button>
         </div>
         <p id="locationStatus"></p>

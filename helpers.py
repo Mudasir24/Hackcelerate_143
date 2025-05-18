@@ -5,7 +5,11 @@ import cvzone
 from functools import wraps
 from flask import session, redirect,render_template
 
-
+# Load the YOLO model
+model = YOLO("model.pt")
+# Define the classes of trash
+trash_classes = {'garbage', 'garbage_bag', 'sampah-detection', 'trash'}
+                 
 def login_required(f):
     """
     Decorator to check if the user is logged in.

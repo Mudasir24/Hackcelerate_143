@@ -2,14 +2,21 @@ import os
 from flask import Flask, render_template, redirect, request, session, url_for, flash
 import base64
 from flask_session import Session
-from helpers import login_required
+from helpers import login_required, detect_trash, estimate_trash_level
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import gridfs
+from datetime import datetime
+import numpy as np
+import cv2
 
 client = MongoClient("mongodb+srv://Fawaz:fawaz1111@garbage-detection.dvpjxvx.mongodb.net/")
 db = client["Garbage_Detection_Project"]
 users_collection = db["Users"]
+complaints_collection = db["Complaints"]
+user_images_collection = db["Images"]
+fs = gridfs.GridFS(db)
 
 app = Flask(__name__)
 
@@ -129,27 +136,148 @@ def complaint():
         # Ensure complaint was submitted
         if 'image' not in request.files:
             flash('No image part in the form')
-            return redirect(request.url)
+            return render_template("complaint.html", message="No image part in the form")
     
         file = request.files['image']
     
         if file.filename == '':
             flash('No image selected for uploading')
-            return redirect(request.url)
+            return render_template("complaint.html", message="No image selected for uploading")
     
         # Collect image data
-        image_name = file.filename
+        file_ext = os.path.splitext(file.filename)[-1].lower().replace('.', '')
         image_data = file.read()
         image_b64 = base64.b64encode(image_data).decode('utf-8')
 
-        if not request.form.get("address"):
+        # Ensure address was submitted
+        if not request.form.get("auto_address") and not request.form.get("manual_address"):
             return render_template("complaint.html", message="Must provide address")
-        if not request.form.get("latitude"):
-            return render_template("complaint.html", message="Must provide latitude")
-        if not request.form.get("longitude"):
-            return render_template("complaint.html", message="Must provide longitude")
         
+        # Garbage detection
+        nparray = np.frombuffer(image_data, np.uint8)
+        image = cv2.imdecode(nparray, cv2.IMREAD_COLOR)
+
+        if image is None:
+            return render_template("complaint.html", message="Invalid image format")
         
+        image = cv2.resize(image, (700,500))
+        has_trash, results = detect_trash(image)
+
+        if not has_trash:
+            return render_template("complaint.html", message="No trash detected in the image")
+        
+        # Estimate trash level
+        trash_level, image = estimate_trash_level(image, results)
+
+       # Database related coding
+        address = request.form.get("auto_address") or request.form.get("manual_address")
+        try:
+            latitude = float(request.form.get("latitude", 0))  # Default to 0 if missing
+            longitude = float(request.form.get("longitude", 0))
+        except ValueError:
+            return render_template("complaint.html", message="Invalid latitude/longitude")
+
+        # Split address
+        try:
+            area, city, pincode, country = [x.strip() for x in address.split(",")]
+        except ValueError:
+            return render_template("complaint.html", message="Address format should be: area, city, pincode")
+        
+        file_id = fs.put(image_data, filename=file.filename)
+
+        # Saving to database
+        user_image = {
+            "file_id": file_id,
+            "image_data": image_b64,
+            "file_type": file_ext,
+            "user_id": session["user_id"],
+            "area": area,
+            "city": city,
+            "pincode": pincode,
+            "latitude": float(latitude),
+            "longitude": float(longitude),
+            "timestamp": datetime.utcnow()
+        }
+        image_result = user_images_collection.insert_one(user_image)
+        image_file_id = image_result.inserted_id
+
+        last_complaint = complaints_collection.find_one(sort=[("complaint_id", -1)])
+        complaint_id = 1 if not last_complaint else last_complaint["complaint_id"] + 1
+
+        complaint_doc = {
+            "complaint_id": complaint_id,
+            "user_id": session["user_id"],
+            "image_file_id": image_file_id,
+            "timestamp": datetime.utcnow(),
+            "status": "new",
+            "assigned_officer_id": None,
+            "cleanup_image_file_id": None
+        }
+
+        complaints_collection.insert_one(complaint_doc)
+
+
+        flash('Complaint registered successfully')
         return redirect("/")
     else:
         return render_template("complaint.html")
+    
+@app.route("/faq")
+@login_required
+def faq():
+    """FAQ page"""
+    return render_template("faq.html")
+
+@app.route("/about")
+@login_required
+def about():
+    """About page"""
+    return render_template("about.html")
+
+@app.route("/officer-login", methods=["GET", "POST"])
+def officer_login():
+    """Officer login page"""
+    # Forget any user_id
+    session.clear()
+    if request.method == "POST":
+        # Ensure username was submitted
+        if not request.form.get("username"):
+            return render_template("officer_login.html", message="Must provide username")
+        
+        # Ensure password was submitted
+        if not request.form.get("password"):
+            return render_template("officer_login.html", message="Must provide password")
+        
+        #Database (fawaz)
+        # Query database for username
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        #session["officer_id"] =  (fawaz)
+
+        return redirect("/officer-dashboard")
+    
+    else:
+        return render_template("officer_login.html")
+    
+@app.route("/officer-dashboard")
+@login_required
+def officer_dashboard():
+    """Officer dashboard page"""
+    return render_template("officer_dashboard.html")
+
+@app.route("/complete", methods=["GET", "POST"])
+@login_required
+def complete():
+    """Complete complaint"""
+    if request.method == "POST":
+        
+        render_template("complete.html")
+
+    else:
+        return render_template("complete.html")
+
+    
+
+    
+
